@@ -6,9 +6,9 @@ import qs
 import qs.components
 
 // hyprland/workspaces with a taskbar: the workspace number followed by one icon
-// per *app* on it, badged with a count when that app has more than one window
-// there, and dotted underneath when it holds the focused window. Clicking a
-// badged icon walks through that app's windows.
+// per *app* on it, dotted underneath when it holds the focused window. Where an
+// app has several windows there, its label says how many and clicking the icon
+// walks through them.
 BarItem {
     id: root
 
@@ -292,11 +292,8 @@ BarItem {
                         return order.map(cls => byClass[cls]);
                     }
 
-                    // The count badges are made of what they sit on: the pill's
-                    // fill on a workspace you are not on, the mark's on the one
-                    // you are, and the compositor blurs behind either. They turn
-                    // with the mark — in as its head arrives, back out as its
-                    // tail lets go.
+                    // How far the mark has come over this workspace, 0..1: in as
+                    // its head arrives, back out as its tail lets go.
                     property real lit: button.active ? 1 : 0
 
                     Behavior on lit {
@@ -305,10 +302,6 @@ BarItem {
                             easing.type: button.active ? Easing.OutCubic : Easing.InOutCubic
                         }
                     }
-
-                    // The mark as it lands on screen, laid over the pill's
-                    // fill and flattened into the one colour a badge can be.
-                    readonly property color badgeFill: Theme.mix(Theme.barBg, Theme.over(mark.tone, Theme.barBg), button.lit)
 
                     // The number and icons of a workspace you are not on stand
                     // a little back, and come forward with the mark.
@@ -395,7 +388,6 @@ BarItem {
 
                                 Layout.alignment: Qt.AlignVCenter
                                 windowClass: modelData.windowClass
-                                count: modelData.addresses.length
                                 urgent: root.anyUrgent(modelData.addresses)
                                 // Only on the workspace in front of you: Hyprland
                                 // keeps the last window as active after you move
@@ -403,17 +395,19 @@ BarItem {
                                 // would point at a window you are not in.
                                 focused: button.active && modelData.addresses.includes(Hyprland.activeToplevel?.address)
                                 pressed: tap.pressed
-                                badgeFill: button.badgeFill
                                 // An app that wants you is not one to stand back.
                                 inkOpacity: app.urgent ? 1 : button.ink
 
                                 // The app's name, the way the Dock labels its
-                                // icons; the badge already says how many.
+                                // icons, and how many windows the icon stands
+                                // for when it is more than one.
                                 HoverPopup {
+                                    readonly property int windows: app.modelData.addresses.length
+
                                     anchorItem: app
                                     hovered: tap.containsMouse
                                     pressed: tap.pressed
-                                    text: app.entry?.name || app.windowClass
+                                    text: (app.entry?.name || app.windowClass) + (windows > 1 ? ` ×${windows}` : "")
                                 }
 
                                 MouseArea {
@@ -423,8 +417,8 @@ BarItem {
 
                                     // Focusing a window switches workspace as a side
                                     // effect. Where an icon stands for several windows,
-                                    // each click moves on to the next of them, so a
-                                    // badged icon is a way through the whole group.
+                                    // each click moves on to the next of them, so the
+                                    // icon is a way through the whole group.
                                     onClicked: {
                                         const addresses = app.modelData.addresses;
                                         const current = Hyprland.activeToplevel?.address;
