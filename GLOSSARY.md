@@ -208,10 +208,6 @@ _Avoid_: Play action, play-next action
 Replacing the current queue with the selected music and starting playback.
 _Avoid_: Resume, queue action
 
-**Play-next action**:
-Inserting selected music immediately after the current track in the queue.
-_Avoid_: Skip, queue action
-
 ### Desktop controls
 
 **Caffeine**:
