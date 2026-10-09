@@ -124,13 +124,18 @@ checks establish routing, not those integrations.
 
 ## Live state
 
-The desktop accessibility socket refused connections before testing despite
-an active service. Restart approval was requested and remains pending; the
-service was not restarted. The first private attempt hit an activation race
-and recreated that already-broken socket again. Subsequent sessions used a
-separate runtime, explicit launcher and registry, and accepted connections.
+The branch was merged into `main` (`83a58c5`). The desktop accessibility
+socket refused connections until `at-spi-dbus-bus.service` was restarted on
+2026-10-09 23:27; a bar started before that logged `Error in contacting
+registry` and stayed off the bus, so the bar needs a restart after the bus
+does.
 
-All test Quickshell instances were stopped. The live bar and three uncommitted
-main-checkout changes were left untouched. This branch was not merged or
-pushed. WeatherPopup annotations use the committed base; applying them
-alongside the user's pending edits may require a merge-conflict resolution.
+Rechecked live afterwards (one top bar at `(0, 0)` on HDMI-A-1): the bar frame
+reported SCREEN `(0, 0, 2560, 38)`, matching Hyprland's layer, so SCREEN
+extents are global coordinates on this desktop. Action 0 on Calendar opened
+it; its frame reported SCREEN `(1107, 34, 240, 366)`, directly under the bar,
+with named month and day buttons, and a second press closed it. Two things
+for a consumer of the tree: controls that are collapsed or hidden (the music
+pill's buttons, an idle countdown) stay in the tree without `showing` or
+`visible`, so filter on `showing`; and each button lists `Press` twice (the
+Button role's own and `onPressAction`'s), both doing the same thing.
