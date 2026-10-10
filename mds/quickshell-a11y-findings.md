@@ -154,3 +154,24 @@ launcher results and preview, settings), half a view per action.
 
 Labels still list `Press`, because ClickArea's handler is always connected;
 it does nothing on them. Tell them apart from buttons by role.
+
+## 7. Right click, middle click and hover (2026-10-10)
+
+Qt's QML `Accessible` has no action for a right or middle click or a hover
+(its actions are press, toggle, increase, decrease, show on screen, scroll
+and page), and it can't add one of its own. So each area names them on the
+last line of its description instead, in one fixed form:
+
+    Pointer: right click, middle click, hover, scroll
+
+only the verbs it has, in that order, after any tooltip text on the lines
+above. Read it with `Atspi.Accessible.get_description()` and take the line
+starting `Pointer: `. Any of them keeps an area in the tree, so an area that
+only answers right or middle (no `Press`) is there as a `label`. A button
+mapped to null, with nothing to do right now, is not named.
+
+`ClickArea` works it out from its `actions` table, `hovers` and `scrolls`.
+A bar module also names the buttons its overlays take: middle for the
+drawer pin, and the popup's button when that isn't left. Plain areas say it
+themselves: calendar days and workspace app icons (`hover`), the weather
+graphs (`hover, scroll`) and a mail's text (`right click`, copies).
