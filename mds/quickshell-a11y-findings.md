@@ -139,3 +139,18 @@ for a consumer of the tree: controls that are collapsed or hidden (the music
 pill's buttons, an idle countdown) stay in the tree without `showing` or
 `visible`, so filter on `showing`; and each button lists `Press` twice (the
 Button role's own and `onPressAction`'s), both doing the same thing.
+
+## 6. Hover and scroll areas (2026-10-10)
+
+A `ClickArea` now stays in the tree when it only hovers (a module with a
+tooltip, `hovers`) or only scrolls (`scrolls`), as role `label` rather than
+`button`; one with nothing to press, hover or scroll is still ignored.
+Every wheel area answers Qt's `Scroll Up` and `Scroll Down` actions, checked
+live over AT-SPI: the workspaces strip (now named "Workspaces"), clock,
+timer, audio, wallpaper, display, keyboard layout and music modules, tray
+icons (one notch to the app), the weather popup's graphs (a day each way),
+and the popups' lists (notifications, music queue, mail, wallpapers,
+launcher results and preview, settings), half a view per action.
+
+Labels still list `Press`, because ClickArea's handler is always connected;
+it does nothing on them. Tell them apart from buttons by role.
